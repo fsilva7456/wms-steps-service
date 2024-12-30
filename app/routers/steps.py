@@ -33,3 +33,12 @@ def update_step(step_id: int, step_data: schemas.StepCreate, db: Session = Depen
     db.commit()
     db.refresh(step)
     return step
+
+@router.delete("/{step_id}")
+def delete_step(step_id: int, db: Session = Depends(get_db)):
+    step = db.query(models.Step).filter(models.Step.id == step_id).first()
+    if not step:
+        raise HTTPException(status_code=404, detail="Step not found")
+    db.delete(step)
+    db.commit()
+    return {"detail": f"Step with id {step_id} has been deleted"}
