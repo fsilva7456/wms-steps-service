@@ -23,3 +23,13 @@ def get_step(step_id: int, db: Session = Depends(get_db)):
     if not step:
         raise HTTPException(status_code=404, detail="Step not found")
     return step
+
+@router.put("/{step_id}", response_model=schemas.Step)
+def update_step(step_id: int, step_data: schemas.StepCreate, db: Session = Depends(get_db)):
+    step = db.query(models.Step).filter(models.Step.id == step_id).first()
+    if not step:
+        raise HTTPException(status_code=404, detail="Step not found")
+    step.step_name = step_data.step_name
+    db.commit()
+    db.refresh(step)
+    return step
